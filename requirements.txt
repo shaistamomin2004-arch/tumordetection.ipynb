@@ -3,7 +3,7 @@ numpy
 pillow
 opencv-python-headless
 gdown
-tensorflow==2.16.1
+tensorflow==2.15.0
 
 
 
