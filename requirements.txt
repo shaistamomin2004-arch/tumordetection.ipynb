@@ -3,7 +3,7 @@ numpy==1.24.4
 opencv-python-headless
 gdown
 tensorflow==2.15.0
-tf_keras
+
 
 
 
