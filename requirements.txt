@@ -1,10 +1,9 @@
 streamlit
-numpy==1.24.4
-opencv-python-headless
+tensorflow==2.19.0
 gdown
-tensorflow==2.15.0
-
-
+numpy
+opencv-python-headless
+pillow
 
 
 
