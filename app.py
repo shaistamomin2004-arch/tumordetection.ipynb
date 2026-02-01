@@ -3,7 +3,7 @@ import gdown
 import streamlit as st
 import tensorflow as tf
 
-MODEL_URL = "https://drive.google.com/file/d/1WcJb68tqwR2gMsdy2hARO2J5y0mUCd6J/view?usp=drive_linkE"
+MODEL_URL = "https://drive.google.com/uc?id=1WcJb68tqwR2gMsdy2hARO2J5y0mUCd6J"
 MODEL_PATH = "unet_tf219.keras"
 
 @st.cache_resource
@@ -13,6 +13,5 @@ def load_unet():
     return tf.keras.models.load_model(MODEL_PATH, compile=False)
 
 st.title("🧠 Brain Tumor Detection")
-
 model = load_unet()
 st.success("✅ Model loaded successfully")
