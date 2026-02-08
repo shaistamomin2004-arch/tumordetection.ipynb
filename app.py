@@ -4,6 +4,7 @@ import streamlit as st
 import numpy as np
 import tensorflow as tf
 from PIL import Image
+import matplotlib.pyplot as plt
 
 # -------------------------------
 # Streamlit page config
@@ -29,10 +30,7 @@ def load_unet_model():
         with st.spinner("⬇️ Downloading model..."):
             gdown.download(MODEL_URL, MODEL_PATH, quiet=False)
 
-    model = tf.keras.models.load_model(
-        MODEL_PATH,
-        compile=False
-    )
+    model = tf.keras.models.load_model(MODEL_PATH, compile=False)
     return model
 
 
@@ -44,7 +42,7 @@ model = load_unet_model()
 st.title("🧠 Brain Tumor Detection")
 st.write(
     "Upload an MRI image. "
-    "The image is processed **in memory only** and **not saved** anywhere."
+    "*Images are processed in memory only and never saved.*"
 )
 
 # -------------------------------
@@ -65,29 +63,49 @@ if uploaded_file is not None:
     st.image(
         image,
         caption="Uploaded MRI Image",
-        use_container_width=True
+        width=400
     )
 
     # Preprocess
     img = image.resize((128, 128))
     img = np.array(img, dtype=np.float32) / 255.0
-    img = img.reshape(1, 128, 128, 1)
+    img_input = img.reshape(1, 128, 128, 1)
 
     # Predict
     with st.spinner("🧠 Analyzing MRI..."):
-        prediction = model.predict(img)
+        prediction = model.predict(img_input)
 
-    # Display result
     st.success("✅ Prediction completed")
 
-    st.write("### Output mask (raw values)")
-    st.write(prediction)
+    # -------------------------------
+    # Post-process prediction
+    # -------------------------------
+    pred_mask = prediction[0, :, :, 0]        # (128,128)
+    binary_mask = (pred_mask > 0.5).astype(np.uint8)
+
+    # -------------------------------
+    # Display results
+    # -------------------------------
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.image(img, caption="Preprocessed MRI", clamp=True)
+
+    with col2:
+        st.image(binary_mask * 255, caption="Predicted Mask", clamp=True)
+
+    with col3:
+        # Overlay
+        fig, ax = plt.subplots()
+        ax.imshow(img, cmap="gray")
+        ax.imshow(binary_mask, cmap="Reds", alpha=0.4)
+        ax.axis("off")
+        st.pyplot(fig)
 
 # -------------------------------
 # Footer
 # -------------------------------
 st.caption(
-    "⚠️ Educational project only. "
-    "No images are stored. "
-    "Public BraTS-style data usage."
+    "⚠️ Educational use only • No images stored • "
+    "Uses publicly available BraTS-style data"
 )
